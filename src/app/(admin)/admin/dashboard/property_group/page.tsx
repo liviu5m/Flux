@@ -1,6 +1,6 @@
 "use client";
 
-import CategoryModal from "@/component/admin/CategoryModal";
+import PropertyGroupModal from "@/component/admin/PropertyGroupModal";
 import {
   faEdit,
   faEllipsis,
@@ -16,12 +16,12 @@ import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { toast, ToastContainer } from "react-toastify";
 
-export default function Category() {
+export default function PropertyGroup() {
   const [modal, setModal] = useState(false);
   const [edit, setEdit] = useState(-1);
   const [created, setCreated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [propertyGroups, setPropertyGroups] = useState<PropertyGroup[]>([]);
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -29,9 +29,9 @@ export default function Category() {
     setLoading(true);
     setCreated(false);
     axios
-      .get("/api/category")
+      .get("/api/property_group")
       .then((res) => {
-        setCategories(res.data);
+        setPropertyGroups(res.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -68,7 +68,7 @@ export default function Category() {
           label: "Yes",
           onClick: () => {
             axios
-              .delete(`/api/category/` + id)
+              .delete(`/api/property_group/` + id)
               .then((res) => {
                 console.log(res.data);
                 toast("Item deleted successful");
@@ -101,21 +101,21 @@ export default function Category() {
     <div className="text-[#F9F7F7] flex h-full">
       <div className="flex-1 h-full overflow-scroll">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl">Categories List</h1>
+          <h1 className="text-xl">Property Group List</h1>
           <button
             className="px-5 py-3 rounded-lg bg-[#3282B8] flex items-center justify-center gap-3 cursor-pointer"
             onClick={() => setModal(true)}
           >
             <FontAwesomeIcon className="w-4" icon={faPlus} />
-            <h2>Add Category</h2>
+            <h2>Add Property Group </h2>
           </button>
         </div>
         <div className="mt-10">
-          {categories.length > 0 ? (
+          {propertyGroups.length > 0 ? (
             <table className="border-collapse border border-gray-400 w-full text-left p-2">
               <thead>
                 <tr>
-                  {Object.keys(categories[0]).map((el: string, i) => {
+                  {Object.keys(propertyGroups[0]).map((el: string, i) => {
                     return (
                       <th key={i} className="border p-2 border-gray-300">
                         {el}
@@ -126,7 +126,7 @@ export default function Category() {
                 </tr>
               </thead>
               <tbody>
-                {categories.map((el, i) => {
+                {propertyGroups.map((el, i) => {
                   return (
                     <tr key={i}>
                       {Object.values(el).map((t, i) => {
@@ -158,7 +158,7 @@ export default function Category() {
               </tbody>
             </table>
           ) : (
-            <p>No Categories</p>
+            <p>No Property Groups</p>
           )}
         </div>
       </div>
@@ -179,7 +179,7 @@ export default function Category() {
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <CategoryModal
+              <PropertyGroupModal
                 setModal={setModal}
                 setCreated={setCreated}
                 edit={edit}

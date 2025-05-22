@@ -4,55 +4,39 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-
-type Field = {
-  field: string;
-  type: string;
-};
-
-type Category = {
-  id: number;
-  name: string;
-};
-
-function capitalizeWords(str: string) {
-  if (typeof str !== "string" || str.length === 0) return str;
-  return str
-    .split(" ")
-    .map((word) => {
-      if (word.length === 0) return word;
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    })
-    .join(" ");
-}
+import Loading from "../Loading";
 
 export default function CreateModal({
-  fields,
   setModal,
   setCreated,
   setEdit,
-  path,
   edit,
 }: {
-  fields: Field[];
   setModal: (e: boolean) => void;
   setCreated: (e: boolean) => void;
   setEdit: (e: number) => void;
-  path: string;
   edit: number;
 }) {
-  const [element, setElement] = useState<Category>();
+  const [category, setCategory] = useState<Category>();
+  const [loading, setLoading] = useState(false);
+
+  console.log(edit);
+  
 
   useEffect(() => {
-    if (edit != -1)
+    if (edit != -1) {
+      setLoading(true);
       axios
-        .get(`/api/${path}/${edit}`)
+        .get(`/api/category/${edit}`)
         .then((res) => {
-          setElement(res.data);
+          setCategory(res.data);
+          setLoading(false);
         })
         .catch((err) => {
           console.log(err);
+          setLoading(false);
         });
+    }
   }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -62,7 +46,7 @@ export default function CreateModal({
 
     if (edit == -1) {
       axios
-        .post("/api/" + path, formValues)
+        .post("/api/category", formValues)
         .then((res) => {
           console.log(res.data);
           setCreated(true);
@@ -72,10 +56,8 @@ export default function CreateModal({
           toast(err.response.data.err);
         });
     } else {
-      console.log("udpate");
-
       axios
-        .put(`/api/${path}/${edit}`, formValues)
+        .put(`/api/category/${edit}`, formValues)
         .then((res) => {
           console.log(res.data);
           setCreated(true);
@@ -88,34 +70,30 @@ export default function CreateModal({
     }
   };
 
-  return (
+  return loading ? <Loading /> : (
     <div className="px-10 py-3 bg-[#F9F7F7] text-[#1B262C] h-full w-full text-center">
       <div className="flex items-center justify-between mt-5 mb-10">
         <h1 className="text-xl">
-          {edit ? "Edit" : "Add a"} {capitalizeWords(path)}
+          {edit != -1 ? "Edit the Category" : "Add a Category"}
         </h1>
         <div
           className="text-red-500 text-xl hover:scale-110 cursor-pointer"
           onClick={() => {
-            setModal(false)
-            setEdit(-1)
+            setModal(false);
+            setEdit(-1);
           }}
         >
           <FontAwesomeIcon icon={faX} />
         </div>
       </div>
       <form className="flex flex-col gap-5" onSubmit={(e) => handleSubmit(e)}>
-        {fields.map((field, i) => {
-          return (
-            <Input
-              key={i}
-              field={field}
-              capitalizeWords={capitalizeWords}
-              edit={edit}
-              element={element}
-            />
-          );
-        })}
+        <input
+          type={"text"}
+          name={"name"}
+          placeholder={"Name"}
+          className="outline-none px-5 py-3 rounded-lg bg-[#3F72AF] w-full text-[#F9F7F7]"
+          defaultValue={category?.name ?? ""}
+        />
         <button className="w-full px-5 py-3 text-[#F9F7F7] text-center rounded-lg bg-[#0F4C75] mt-2 cursor-pointer hover:text-[#0F4C75] hover:bg-[#F9F7F7] border border-[#0F4C75]">
           Submit
         </button>
