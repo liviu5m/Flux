@@ -9,19 +9,20 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useEffect, useState, useRef, ReactElement } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Loading from "@/component/Loading";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { toast, ToastContainer } from "react-toastify";
+import { Category as CategoryType } from "@/lib/uses";
 
 export default function Category() {
   const [modal, setModal] = useState(false);
   const [edit, setEdit] = useState(-1);
   const [created, setCreated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
 
   const modalRef = useRef<HTMLDivElement>(null);
 

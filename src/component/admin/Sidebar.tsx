@@ -14,6 +14,11 @@ export default function Sidebar() {
           Property Group
         </li>
       </Link>
+      <Link className="w-full h-full" href={"/admin/dashboard/property"}>
+        <li className="px-5 py-3 rounded-lg bg-[#3282B8] text-[#F9F7F7] text-center cursor-pointer">
+          Property
+        </li>
+      </Link>
       <Link className="w-full h-full" href={"/admin/dashboard/product"}>
         <li className="px-5 py-3 rounded-lg bg-[#3282B8] text-[#F9F7F7] text-center cursor-pointer">
           Product

@@ -1,11 +1,20 @@
-import { Types } from "@/lib/uses";
+import { Category, Product } from "@/lib/uses";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { log } from "util";
 
-export default function SelectInput({ field }: { field: string }) {
-  const [elements, setElements] = useState<Types[typeof field][]>([]);
+type Type = Category | Product;
 
-  console.log(field);
+export default function SelectInput({
+  field,
+  edit,
+  id,
+}: {
+  field: string;
+  edit: number;
+  id: number;
+}) {
+  const [elements, setElements] = useState<Type[]>([]);
 
   useEffect(() => {
     axios
@@ -22,11 +31,19 @@ export default function SelectInput({ field }: { field: string }) {
     elements && (
       <div>
         <label htmlFor="el"></label>
-        <select name="categoryId" id="el">
-          <option value="">Select A Opton</option>
+        <select
+          name={field + "Id"}
+          id="el"
+          className="outline-none px-5 py-3 rounded-lg bg-[#3F72AF] w-full text-[#F9F7F7]"
+        >
+          <option value="">Select A Option</option>
           {elements.map((el, i) => {
             return (
-              <option key={i} value={el.id}>
+              <option
+                key={i}
+                defaultValue={el.id}
+                {...(edit != -1 && el.id === id ? { selected: true } : {})}
+              >
                 {el.name}
               </option>
             );

@@ -1,12 +1,6 @@
 "use client";
 
-import PropertyGroupModal from "@/component/admin/PropertyGroupModal";
-import {
-  faEdit,
-  faEllipsis,
-  faPlus,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState, useRef, ReactElement } from "react";
@@ -15,14 +9,15 @@ import Loading from "@/component/Loading";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { toast, ToastContainer } from "react-toastify";
-import { PropertyGroup as Type } from "@/lib/uses";
+import ProductModal from "@/component/admin/ProductModal";
+import { Product } from "@/lib/uses";
 
-export default function PropertyGroup() {
+export default function ProductPage() {
   const [modal, setModal] = useState(false);
   const [edit, setEdit] = useState(-1);
   const [created, setCreated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [propertyGroups, setPropertyGroups] = useState<Type[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -30,9 +25,9 @@ export default function PropertyGroup() {
     setLoading(true);
     setCreated(false);
     axios
-      .get("/api/property_group")
+      .get("/api/product")
       .then((res) => {
-        setPropertyGroups(res.data);
+        setProducts(res.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -69,7 +64,7 @@ export default function PropertyGroup() {
           label: "Yes",
           onClick: () => {
             axios
-              .delete(`/api/property_group/` + id)
+              .delete(`/api/product/` + id)
               .then((res) => {
                 console.log(res.data);
                 toast("Item deleted successful");
@@ -102,21 +97,21 @@ export default function PropertyGroup() {
     <div className="text-[#F9F7F7] flex h-full">
       <div className="flex-1 h-full overflow-scroll">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl">Property Group List</h1>
+          <h1 className="text-xl">Products List</h1>
           <button
             className="px-5 py-3 rounded-lg bg-[#3282B8] flex items-center justify-center gap-3 cursor-pointer"
             onClick={() => setModal(true)}
           >
             <FontAwesomeIcon className="w-4" icon={faPlus} />
-            <h2>Add Property Group </h2>
+            <h2>Add Product</h2>
           </button>
         </div>
         <div className="mt-10">
-          {propertyGroups.length > 0 ? (
+          {products.length > 0 ? (
             <table className="border-collapse border border-gray-400 w-full text-left p-2">
               <thead>
                 <tr>
-                  {Object.keys(propertyGroups[0]).map((el: string, i) => {
+                  {Object.keys(products[0]).map((el: string, i) => {
                     return (
                       <th key={i} className="border p-2 border-gray-300">
                         {el}
@@ -127,13 +122,13 @@ export default function PropertyGroup() {
                 </tr>
               </thead>
               <tbody>
-                {propertyGroups.map((el, i) => {
+                {products.map((el, i) => {
                   return (
                     <tr key={i}>
                       {Object.values(el).map((t, i) => {
                         return (
                           <td key={i} className="border p-2 border-gray-300">
-                            {t}
+                            {Array.isArray(t) ? t.map((t) => t.name) : t}
                           </td>
                         );
                       })}
@@ -159,14 +154,14 @@ export default function PropertyGroup() {
               </tbody>
             </table>
           ) : (
-            <p>No Property Groups</p>
+            <p>No Products</p>
           )}
         </div>
       </div>
       <AnimatePresence>
         {modal && (
           <motion.div
-            className="fixed inset-0 bg-black/50 flex justify-end z-50"
+            className="fixed inset-0 bg-black/50 flex justify-end z-40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -174,13 +169,13 @@ export default function PropertyGroup() {
           >
             <motion.div
               ref={modalRef}
-              className="bg-[#1B262C] w-full max-w-md h-full overflow-y-auto"
+              className="bg-[#1B262C] h-full overflow-y-auto"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <PropertyGroupModal
+              <ProductModal
                 setModal={setModal}
                 setCreated={setCreated}
                 edit={edit}

@@ -1,7 +1,6 @@
 import React from "react";
 import ImageInput from "./ImageInput";
 import SelectInput from "./SelectInput";
-import { Types } from "@/lib/uses";
 
 type Field = {
   field: string;

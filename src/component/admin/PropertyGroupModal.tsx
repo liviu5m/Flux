@@ -5,6 +5,7 @@ import { faX } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Loading from "../Loading";
+import { PropertyGroup } from "@prisma/client";
 
 export default function CreateModal({
   setModal,

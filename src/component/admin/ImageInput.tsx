@@ -3,8 +3,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useState } from "react";
 
-export default function ImageInput() {
-  const [images, setImages] = useState<string[]>([]);
+type Image = {
+  previewUrl: string;
+  url: string;
+};
+
+export default function ImageInput({
+  images,
+  setImages,
+}: {
+  images: Image[];
+  setImages: (e: Image[]) => void;
+}) {
+  
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -12,7 +23,6 @@ export default function ImageInput() {
     const file = e.target.files[0];
 
     const previewUrl = URL.createObjectURL(file);
-    setImages([...images, previewUrl]);
 
     try {
       const reader = new FileReader();
@@ -26,7 +36,10 @@ export default function ImageInput() {
             const response = await axios.post("/api/cloudinary", {
               file: `data:image/jpeg;base64,${base64String}`,
             });
-            console.log(response.data.secure_url);
+            setImages([
+              ...images,
+              { previewUrl, url: response.data.secure_url },
+            ]);
           } catch (error) {
             console.error("Error uploading to Cloudinary:", error);
           }
@@ -58,14 +71,19 @@ export default function ImageInput() {
           <h2>Add an image</h2>
         </label>
       </div>
-      <div className="grid grid-cols-3 gap-2 mt-5">
+      <div className="grid grid-cols-4 gap-2 mt-5">
         {images.map((image, i) => {
           return (
             <div key={i} className="relative">
-              <div className="absolute top-1 right-1 cursor-pointer text-red-500" onClick={() => setImages(images.filter((image, ind) => ind != i))}>
+              <div
+                className="absolute top-1 right-1 cursor-pointer text-red-500"
+                onClick={() =>
+                  setImages(images.filter((image, ind) => ind != i))
+                }
+              >
                 <FontAwesomeIcon icon={faX} />
               </div>
-              <img key={i} src={image} className="rounded-lg" />;
+              <img key={i} src={image.previewUrl} className="rounded-lg" />;
             </div>
           );
         })}

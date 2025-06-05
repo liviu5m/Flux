@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
-import Input from "./Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Loading from "../Loading";
-import { Category } from "@/lib/uses";
+import { Product } from "@/lib/uses";
+import ImageInput from "./ImageInput";
+import SelectInput from "./SelectInput";
+import PropertiesAdd from "./PropertiesAdd";
 
-export default function CreateModal({
+type Image = {
+  previewUrl: string;
+  url: string;
+};
+
+export default function ProductModal({
   setModal,
   setCreated,
   setEdit,
@@ -18,19 +25,18 @@ export default function CreateModal({
   setEdit: (e: number) => void;
   edit: number;
 }) {
-  const [category, setCategory] = useState<Category>();
+  const [product, setProduct] = useState<Product>();
   const [loading, setLoading] = useState(false);
-
-  console.log(edit);
-  
+  const [images, setImages] = useState<Image[]>([]);
+  const [properties, setProperties] = useState<Image[]>([]);
 
   useEffect(() => {
     if (edit != -1) {
       setLoading(true);
       axios
-        .get(`/api/category/${edit}`)
+        .get(`/api/product/${edit}`)
         .then((res) => {
-          setCategory(res.data);
+          setProduct(res.data);
           setLoading(false);
         })
         .catch((err) => {
@@ -47,7 +53,7 @@ export default function CreateModal({
 
     if (edit == -1) {
       axios
-        .post("/api/category", formValues)
+        .post("/api/product", formValues)
         .then((res) => {
           console.log(res.data);
           setCreated(true);
@@ -58,7 +64,7 @@ export default function CreateModal({
         });
     } else {
       axios
-        .put(`/api/category/${edit}`, formValues)
+        .put(`/api/product/${edit}`, formValues)
         .then((res) => {
           console.log(res.data);
           setCreated(true);
@@ -71,11 +77,13 @@ export default function CreateModal({
     }
   };
 
-  return loading ? <Loading /> : (
-    <div className="px-10 py-3 bg-[#F9F7F7] text-[#1B262C] h-full w-full text-center">
+  return loading ? (
+    <Loading />
+  ) : (
+    <div className="px-10 py-3 bg-[#F9F7F7] text-[#1B262C] min-h-screen w-[800px] text-center">
       <div className="flex items-center justify-between mt-5 mb-10">
         <h1 className="text-xl">
-          {edit != -1 ? "Edit the Category" : "Add a Category"}
+          {edit != -1 ? "Edit the Product" : "Add a Product"}
         </h1>
         <div
           className="text-red-500 text-xl hover:scale-110 cursor-pointer"
@@ -93,8 +101,18 @@ export default function CreateModal({
           name={"name"}
           placeholder={"Name"}
           className="outline-none px-5 py-3 rounded-lg bg-[#3F72AF] w-full text-[#F9F7F7]"
-          defaultValue={category?.name ?? ""}
+          defaultValue={product?.name ?? ""}
         />
+        <input
+          type={"number"}
+          name={"price"}
+          placeholder={"Price"}
+          className="outline-none px-5 py-3 rounded-lg bg-[#3F72AF] w-full text-[#F9F7F7]"
+          defaultValue={product?.price ?? ""}
+        />
+        <ImageInput setImages={setImages} images={images} />
+        <SelectInput field={"category"} edit={-1} id={product?.id || -1} />
+        <PropertiesAdd />
         <button className="w-full px-5 py-3 text-[#F9F7F7] text-center rounded-lg bg-[#0F4C75] mt-2 cursor-pointer hover:text-[#0F4C75] hover:bg-[#F9F7F7] border border-[#0F4C75]">
           Submit
         </button>
